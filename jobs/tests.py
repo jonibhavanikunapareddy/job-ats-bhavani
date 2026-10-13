@@ -38,6 +38,18 @@ class ATSWorkflowTests(TestCase):
 		self.assertContains(response, 'class="company-vacancies">2')
 		self.assertContains(response, "open seats")
 
+	def test_job_board_seeds_thirty_sample_roles_with_vacancies_when_empty(self):
+		JobPosting.objects.all().delete()
+
+		response = self.client.get(reverse("jobs:job_list"))
+
+		self.assertEqual(response.status_code, 200)
+		self.assertEqual(JobPosting.objects.count(), 30)
+		self.assertEqual(JobPosting.objects.get(title="Python Developer").vacancies, 5)
+		self.assertEqual(JobPosting.objects.get(title="WordPress Developer").vacancies, 10)
+		self.assertEqual(JobPosting.objects.get(title="PHP Developer").location, "Kolkata")
+		self.assertContains(response, "5 role openings")
+
 	def test_candidate_registration_creates_account_and_profile(self):
 		response = self.client.post(
 			reverse("jobs:register"),

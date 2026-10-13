@@ -85,6 +85,7 @@ class JobPostingForm(forms.ModelForm):
         fields = (
             "company",
             "title",
+            "location",
             "job_type",
             "required_skills",
             "salary_range",
@@ -95,6 +96,7 @@ class JobPostingForm(forms.ModelForm):
         widgets = {
             "company": forms.Select(attrs={"class": "form-select"}),
             "title": forms.TextInput(attrs={"class": "form-control"}),
+            "location": forms.TextInput(attrs={"class": "form-control"}),
             "job_type": forms.Select(attrs={"class": "form-select"}),
             "required_skills": forms.TextInput(attrs={"class": "form-control"}),
             "salary_range": forms.TextInput(attrs={"class": "form-control"}),

@@ -47,13 +47,12 @@ class JobPosting(models.Model):
         Company, on_delete=models.CASCADE, related_name="job_postings"
     )
     title = models.CharField(max_length=160)
+    location = models.CharField(max_length=160, blank=True)
     job_type = models.CharField(max_length=24, choices=JobType.choices)
     required_skills = models.CharField(max_length=500)
     salary_range = models.CharField(max_length=120, blank=True)
     description = models.TextField()
-    vacancies = models.PositiveIntegerField(
-        default=1, validators=[MinValueValidator(1)]
-    )
+    vacancies = models.PositiveIntegerField(default=1, validators=[MinValueValidator(1)])
     is_active = models.BooleanField(default=True)
     posted_at = models.DateTimeField(auto_now_add=True)
 

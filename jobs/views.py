@@ -20,6 +20,71 @@ from .forms import (
 from .models import Candidate, Company, JobApplication, JobPosting
 
 
+SAMPLE_JOBS = [
+	{"title": "Python Developer", "company": "TCS", "location": "Hyderabad", "skills": "Python, Django, REST API", "vacancies": 5},
+	{"title": "Frontend Developer", "company": "Infosys", "location": "Bangalore", "skills": "React, JavaScript", "vacancies": 3},
+	{"title": "Data Analyst", "company": "Wipro", "location": "Remote", "skills": "SQL, Python, PowerBI", "vacancies": 10},
+	{"title": "Java Developer", "company": "Cognizant", "location": "Chennai", "skills": "Java, Spring Boot", "vacancies": 4},
+	{"title": "UI/UX Designer", "company": "Tech Mahindra", "location": "Pune", "skills": "Figma, Adobe XD", "vacancies": 2},
+	{"title": "DevOps Engineer", "company": "Accenture", "location": "Hyderabad", "skills": "AWS, Docker, Jenkins", "vacancies": 3},
+	{"title": "Data Scientist", "company": "IBM", "location": "Bangalore", "skills": "ML, Python", "vacancies": 2},
+	{"title": "Backend Developer", "company": "Capgemini", "location": "Mumbai", "skills": "Node.js, MongoDB", "vacancies": 6},
+	{"title": "Full Stack Developer", "company": "HCL", "location": "Noida", "skills": "MERN Stack", "vacancies": 5},
+	{"title": "QA Engineer", "company": "Deloitte", "location": "Hyderabad", "skills": "Manual + Automation", "vacancies": 8},
+	{"title": "Cloud Engineer", "company": "Amazon", "location": "Remote", "skills": "AWS, Azure", "vacancies": 4},
+	{"title": "Mobile App Developer", "company": "Flipkart", "location": "Bangalore", "skills": "Flutter, Android", "vacancies": 3},
+	{"title": "Business Analyst", "company": "Wipro", "location": "Chennai", "skills": "Requirement Analysis", "vacancies": 2},
+	{"title": "HR Manager", "company": "TCS", "location": "Hyderabad", "skills": "Recruitment", "vacancies": 1},
+	{"title": "Graphic Designer", "company": "Infosys", "location": "Pune", "skills": "Photoshop", "vacancies": 2},
+	{"title": "Python Intern", "company": "Startup Hub", "location": "Remote", "skills": "Internship Python", "vacancies": 15},
+	{"title": "Java Intern", "company": "Cognizant", "location": "Chennai", "skills": "Java Internship", "vacancies": 10},
+	{"title": "Content Writer", "company": "Byjus", "location": "Remote", "skills": "SEO Writing", "vacancies": 5},
+	{"title": "Digital Marketing", "company": "Swiggy", "location": "Hyderabad", "skills": "SEO, Ads", "vacancies": 3},
+	{"title": "Sales Executive", "company": "Zomato", "location": "Mumbai", "skills": "Sales", "vacancies": 20},
+	{"title": "Customer Support", "company": "Tech Mahindra", "location": "Hyderabad", "skills": "Voice Support", "vacancies": 25},
+	{"title": "Network Engineer", "company": "Cisco", "location": "Bangalore", "skills": "CCNA", "vacancies": 2},
+	{"title": "AI Engineer", "company": "Google", "location": "Remote", "skills": "AI, Tensorflow", "vacancies": 3},
+	{"title": "Blockchain Developer", "company": "Infosys", "location": "Hyderabad", "skills": "Solidity", "vacancies": 1},
+	{"title": "Cyber Security Analyst", "company": "Deloitte", "location": "Chennai", "skills": "Security", "vacancies": 2},
+	{"title": "Product Manager", "company": "Microsoft", "location": "Bangalore", "skills": "Product Management", "vacancies": 1},
+	{"title": "PHP Developer", "company": "Wipro", "location": "Kolkata", "skills": "PHP, Laravel", "vacancies": 4},
+	{"title": "Angular Developer", "company": "TCS", "location": "Pune", "skills": "Angular", "vacancies": 3},
+	{"title": "SQL Developer", "company": "Oracle", "location": "Hyderabad", "skills": "SQL, PL/SQL", "vacancies": 6},
+	{"title": "WordPress Developer", "company": "Freelance", "location": "Remote", "skills": "WordPress", "vacancies": 10},
+]
+
+
+def _seed_sample_jobs():
+	if JobPosting.objects.exists():
+		return
+
+	with transaction.atomic():
+		if JobPosting.objects.exists():
+			return
+		for sample in SAMPLE_JOBS:
+			company, _ = Company.objects.get_or_create(
+				name=sample["company"],
+				defaults={"location": sample["location"]},
+			)
+			job_type = (
+				JobPosting.JobType.INTERNSHIP
+				if "intern" in sample["title"].lower()
+				else JobPosting.JobType.FULL_TIME
+			)
+			JobPosting.objects.create(
+				company=company,
+				title=sample["title"],
+				location=sample["location"],
+				job_type=job_type,
+				required_skills=sample["skills"],
+				description=(
+					f"{sample['title']} role at {sample['company']}. "
+					f"Required skills: {sample['skills']}."
+				),
+				vacancies=sample["vacancies"],
+			)
+
+
 class StyledLoginView(LoginView):
 	template_name = "jobs/login.html"
 	redirect_authenticated_user = True
@@ -33,6 +98,7 @@ class StyledPasswordResetView(PasswordResetView):
 
 
 def job_list(request):
+	_seed_sample_jobs()
 	jobs = (
 		JobPosting.objects.filter(is_active=True)
 		.select_related("company")
